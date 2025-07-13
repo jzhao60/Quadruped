@@ -3,7 +3,7 @@
 Servo myServo;  // Create a servo object
 
 void setup() {
-  myServo.attach(13);  // Connect servo signal wire to pin 9
+  myServo.attach(11);  // Connect servo signal wire to pin 9
 }
 
 void loop() {
