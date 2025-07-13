@@ -7,8 +7,11 @@ float theta1;
 float theta2 = 0;
 float theta3;
 float theta4;
+// height off the ground from shaft of servo1
 float h = 45.0;
+// distance of line away from servo 1
 float x = 50.0;
+// leg 1 and leg 2
 float l1 = 40.0;
 float l2 = 62.0;
 
@@ -36,12 +39,13 @@ void setup() {
 }
 
 void loop() {
+  // servo1 back and forth
   if (currentAngle < targetAngle) {
     for (int pos = currentAngle; pos <= targetAngle; pos++) {
       servo1.write(pos);
       theta2 = pos - 90;
       moveServos();
-      delay(20); // Adjust this delay for speed (smaller = faster)
+      delay(20); // speed (smaller = faster)
     }
   }
   else{
@@ -49,15 +53,15 @@ void loop() {
       servo1.write(pos);
       theta2 = pos - 90;
       moveServos();
-      delay(20); // Adjust this delay for speed (smaller = faster)
+      delay(20); 
     }
   }
 
   currentAngle = targetAngle;
 
-  // Set a new target to go back and forth
+  //back and forth
   targetAngle = (targetAngle == 135) ? 45 : 135;
-  delay(1000); // Wait before changing direction
+  delay(1000); // wait before changing direction
 }
 
 void adjustThetas(){
