@@ -1,21 +1,25 @@
 #include <Servo.h>
 
 Servo myServo;  // Create a servo object
+Servo myServo2;  // Create a servo object
 
 void setup() {
-  myServo.attach(11);  // Connect servo signal wire to pin 9
+  myServo.attach(13);  // Connect servo signal wire to pin 9
+  myServo2.attach(12);  // Connect servo signal wire to pin 9
+  myServo.write(90);
+  myServo2.write(90);
+  delay(2000);
+  for (int pos = 90; pos <= 180; pos++) {
+  myServo.write(pos);
+  myServo2.write(180-pos);
+  delay(30);  // small delay to smooth motion
+  }
+  for (int pos = 180; pos >= 90; pos--) {
+  myServo.write(pos);
+  myServo2.write(180-pos);
+  delay(30);  // small delay to smooth motion
+  }
 }
 
 void loop() {
-  // Sweep from 0 to 180 degrees
-  for (int angle = 0; angle <= 180; angle++) {
-    myServo.write(angle);
-    delay(10);  // Wait for the servo to move
-  }
-
-  // Sweep back from 180 to 0 degrees
-  for (int angle = 180; angle >= 0; angle--) {
-    myServo.write(angle);
-    delay(10);  // Wait for the servo to move
-  }
 }
