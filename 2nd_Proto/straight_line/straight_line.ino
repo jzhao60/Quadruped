@@ -24,6 +24,8 @@ const int servo4Pin = 16;
 
 int currentAngle = 90;
 int targetAngle = 45;
+int lowAngle = 90;
+int hiAngle = 45;
 
 void setup() {
 
@@ -64,30 +66,31 @@ void setup() {
 
 void loop() {
   // servo1 back and forth
-  if (currentAngle < targetAngle) {
-    for (int pos = currentAngle; pos <= targetAngle; pos++) {
-      servo1.write(pos);
-      servo2.write(180 - pos);
-      theta = pos - 90;
-      moveServos();
-      delay(20); // speed (smaller = faster)
-    }
-  }
-  else{
+  if (currentAngle > targetAngle) {
+    delay(1000); // wait before changing direction
     for (int pos = currentAngle; pos >= targetAngle; pos--) {
       servo1.write(pos);
       servo2.write(180 - pos);
       theta = pos - 90;
       moveServos();
-      delay(20); 
+      delay(30); 
+    }
+  }
+  else{
+    delay(1000); // wait before changing direction
+    for (int pos = currentAngle; pos <= targetAngle; pos++) {
+      servo1.write(pos);
+      servo2.write(180 - pos);
+      theta = pos - 90;
+      moveServos();
+      delay(30); // speed (smaller = faster)
     }
   }
 
   currentAngle = targetAngle;
 
   //back and forth
-  targetAngle = (targetAngle == 135) ? 90 : 135;
-  delay(1000); // wait before changing direction
+  targetAngle = (targetAngle == hiAngle) ? lowAngle : hiAngle;
 }
 
 void adjustThetas(){
