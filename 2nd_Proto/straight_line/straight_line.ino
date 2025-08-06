@@ -1,9 +1,10 @@
-#include <Servo.h>
+#include <ESP32Servo.h>
 
 Servo servo1;
 Servo servo2;
 Servo servo3;
 Servo servo4;
+
 float theta1;
 float theta = 0;
 float theta2;
@@ -16,14 +17,31 @@ float x = 130.0;
 float l1 = 100.0;
 float l2 = 150.0;
 
-// for servo1 rotation
+const int servo1Pin = 15; 
+const int servo2Pin = 2;
+const int servo3Pin = 4; 
+const int servo4Pin = 16; 
+
 int currentAngle = 90;
-int targetAngle = 135;
+int targetAngle = 45;
 
 void setup() {
+
+  Serial.begin(115200);
+  delay(2000);
+
   adjustThetas();
-  Serial.begin(9600);
-  /*
+
+  servo1.setPeriodHertz(50);    // Standard servo frequency
+  servo2.setPeriodHertz(50);    // Standard servo frequency
+  servo3.setPeriodHertz(50);    // Standard servo frequency
+  servo4.setPeriodHertz(50);    // Standard servo frequency
+
+  servo1.attach(servo1Pin, 500, 2400); // Pin, min pulse width, max pulse width
+  servo2.attach(servo2Pin, 500, 2400);
+  servo3.attach(servo3Pin, 500, 2400);
+  servo4.attach(servo4Pin, 500, 2400);
+
   Serial.print("theta1: ");
   Serial.print(theta1);
   Serial.println(" degrees");
@@ -33,12 +51,7 @@ void setup() {
   Serial.print("theta3: ");
   Serial.print(theta3);
   Serial.println(" degrees");
-  */
   
-  servo1.attach(13);
-  servo2.attach(12);
-  servo3.attach(11);
-  servo4.attach(10);
   servo1.write(90); 
   servo2.write(90); 
   servo3.write(90); 
@@ -57,7 +70,7 @@ void loop() {
       servo2.write(180 - pos);
       theta = pos - 90;
       moveServos();
-      delay(50); // speed (smaller = faster)
+      delay(20); // speed (smaller = faster)
     }
   }
   else{
@@ -66,7 +79,7 @@ void loop() {
       servo2.write(180 - pos);
       theta = pos - 90;
       moveServos();
-      delay(50); // speed (smaller = faster)
+      delay(20); 
     }
   }
 
