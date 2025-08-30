@@ -1,7 +1,17 @@
 #include <ESP32Servo.h>
+#include <Wire.h>
+#include <Adafruit_PWMServoDriver.h>
 
-Servo servo1;
-Servo servo2;
+// PCA9685 object (default I2C address 0x40)
+Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver(0x40);
+
+// servo min/max pulse lengths 
+#define SERVO_MIN 150  // 0 degrees (out of 4096)
+#define SERVO_MAX 600  // 180 degrees (out of 4096)
+
+int servo1_channel = 0;  // servo connected to servo1_channel 0
+int servo2_channel = 1;  // servo connected to servo1_channel 1
+
 Servo servo3;
 Servo servo4;
 
@@ -17,31 +27,27 @@ float x = 130.0;
 float l1 = 100.0;
 float l2 = 150.0;
 
-const int servo1Pin = 15; 
-const int servo2Pin = 2;
 const int servo3Pin = 4; 
 const int servo4Pin = 16; 
 
 int currentAngle = 90;
-int targetAngle = 45;
-int lowAngle = 90;
-int hiAngle = 45;
+int targetAngle = 20;
+int lowAngle = 60;
+int hiAngle = 140;
 
 void setup() {
 
   Serial.begin(115200);
+  pwm.begin();          // initialize PCA9685
+  pwm.setPWMFreq(50);   // set frequency to 50 Hz (typical for servos)
   delay(2000);
 
   adjustThetas();
 
-  servo1.setPeriodHertz(50);    // Standard servo frequency
-  servo2.setPeriodHertz(50);    // Standard servo frequency
   servo3.setPeriodHertz(50);    // Standard servo frequency
   servo4.setPeriodHertz(50);    // Standard servo frequency
 
-  servo1.attach(servo1Pin, 500, 2400); // Pin, min pulse width, max pulse width
-  servo2.attach(servo2Pin, 500, 2400);
-  servo3.attach(servo3Pin, 500, 2400);
+  servo3.attach(servo3Pin, 500, 2400); // Pin, min pulse width, max pulse width
   servo4.attach(servo4Pin, 500, 2400);
 
   Serial.print("theta1: ");
@@ -54,10 +60,10 @@ void setup() {
   Serial.print(theta3);
   Serial.println(" degrees");
   
-  servo1.write(90); 
-  servo2.write(90); 
-  servo3.write(90); 
-  servo4.write(90); 
+  pwm.setPWM(servo1_channel, 0, angleToPulse(currentAngle));
+  pwm.setPWM(servo2_channel, 0, angleToPulse(currentAngle));
+  servo3.write(currentAngle); 
+  servo4.write(currentAngle); 
   delay(1000);
   servo3.write(90 - (theta3 + theta2 - 90)); 
   servo4.write(90 - (90 - theta1)); 
@@ -69,8 +75,8 @@ void loop() {
   if (currentAngle > targetAngle) {
     delay(1000); // wait before changing direction
     for (int pos = currentAngle; pos >= targetAngle; pos--) {
-      servo1.write(pos);
-      servo2.write(180 - pos);
+      pwm.setPWM(servo1_channel, 0, angleToPulse(pos));
+      pwm.setPWM(servo2_channel, 0, angleToPulse(180-pos));
       theta = pos - 90;
       moveServos();
       delay(30); 
@@ -79,8 +85,8 @@ void loop() {
   else{
     delay(1000); // wait before changing direction
     for (int pos = currentAngle; pos <= targetAngle; pos++) {
-      servo1.write(pos);
-      servo2.write(180 - pos);
+      pwm.setPWM(servo1_channel, 0, angleToPulse(pos));
+      pwm.setPWM(servo2_channel, 0, angleToPulse(180-pos));
       theta = pos - 90;
       moveServos();
       delay(30); // speed (smaller = faster)
@@ -119,4 +125,9 @@ void moveServos(){
   float servo3Ang = 90 - (theta3 + theta2 - 90);
   servo3.write(servo3Ang);
   servo4.write(90 - (90 - theta1));
+}
+
+// function to map angle (0–180°) to PCA9685 pulse length
+int angleToPulse(int angle) {
+  return map(angle, 0, 180, SERVO_MIN, SERVO_MAX);
 }
